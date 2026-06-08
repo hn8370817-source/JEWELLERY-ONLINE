@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <!-- Main image -->
+        <img id="mainProductImage" src="{{ product.images[0].url if product.images else '' }}" class="img-fluid rounded mb-3" alt="{{ product.name }}">
+        <div class="d-flex gap-2">
+            {% for img in product.images %}
+            <img src="{{ img.url }}" class="img-thumbnail thumb" style="width:80px; height:80px; object-fit:cover; cursor:pointer;" onclick="document.getElementById('mainProductImage').src='{{ img.url }}'">
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-md-6">
+        <h2>{{ product.name }}</h2>
+        <p class="fs-4 text-warning">₹{{ product.price }}</p>
+        <p>{{ product.description }}</p>
+        <p><strong>Category:</strong> {{ product.category.name }}</p>
+        <p>
+            {% if product.stock > 0 %}
+            <span class="badge bg-success">In Stock ({{ product.stock }} available)</span>
+            {% else %}
+            <span class="badge bg-danger">Out of Stock</span>
+            {% endif %}
+        </p>
+        <form method="POST" action="{{ url_for('add_to_cart', prod_id=product.id) }}" class="d-inline">
+            <button type="submit" class="btn btn-dark btn-lg" {% if product.stock == 0 %}disabled{% endif %}>
+                <i class="fas fa-cart-plus"></i> Add to Cart
+            </button>
+        </form>
+        {% if current_user.is_authenticated %}
+        <form method="POST" action="{{ url_for('add_to_wishlist', prod_id=product.id) }}" class="d-inline ms-2">
+            <button type="submit" class="btn btn-outline-danger btn-lg">
+                <i class="far fa-heart"></i> Add to Wishlist
+            </button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
